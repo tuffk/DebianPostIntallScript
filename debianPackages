@@ -1,0 +1,373 @@
+#!/bin/bash
+if [-z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ]
+then 
+   echo "Faltan opciones"
+   echo "./Debian_Packages A B C D E F"
+  echo "donde: N es la versión del script"
+  echo "       A es 1 si se quiere instalar CUDA y además se tiene una tarjeta de video NVIDIA o 0 si no"
+  echo "       B es 1 si se quire instalar LATEX para escribir papers o 0 si no"
+  echo "       C es 1 si se quiere instalar STEAM para juegos o 0 si no"
+  echo "       D es 1 si se quiere instalar Netbeans o 0 si no"
+  echo "       E es 1 si no se instaló Netbeans ni CUDA y se quiere quitar el otro java de linux (ya que si se instalará el Java de Oracle) o 0 si no se quiere quitar"
+  echo "       F Si deseas que se instalen ruby (con la gema rails), R, asi como la herramienta git"
+  exit 1
+fi
+whoami > quien
+cat quien
+a = "usuario"
+echo $a
+cat quien | while read LINE
+do
+##si no eres root no puedes pasar de aqui
+  if [[$LINE != *"root"*]]
+  then
+     echo "Debes ser root para poder correr el script (no se puede con sudo)"
+    exit 1
+  fi
+done
+rm quien
+echo "listo para instalar"
+
+##instalas los paquetes que faltan
+apt-get install -y g++
+apt-get install -y k3b
+apt-get install -y xfce4-xkb-plugin
+
+##Instalacion de chrome
+## https://www.google.com/intl/en/chrome/browser/
+apt-get install -y libcurl3
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+dpkg -i google-chrome-stable_current_amd64.deb
+rm google-chrome-stable_current_amd64.deb
+
+##Quitar los parquetes que no son seguros.
+apt-get remove -y ftp
+dpkg -r telnet
+dpkg -P telnet
+dpkg -r samba-common smbclient samba-common-bin
+dpkg -P samba-common
+dpkg -r transmission-gtk
+dpkg -r transmission-common
+dpkg -P transmission-gtk
+dpkg -r pptp-linux network-manager-pptp network-manager-pptp-gnome
+dpkg -P pptp-linux network-manager-pptp
+dpkg -r ppp pppoeconf pppconfig
+dpkg -P ppp pppoeconf pppconfig
+dpkg -r rsync
+dpkg -P rsync
+dpkg -r vinagre
+dpkg -P vinagre
+dpkg -r blueman
+dpkg -P blueman
+dpkg -r bluez bluez-cups bluez-alsa
+dpkg -P bluez
+dpkg -r xchat xchat-common xchat-indicator
+dpkg -P xchat
+
+##checamos los demas paqutes
+dpkg -l | grep -i mail
+dpkg -l | grep -i evolution
+dpkg -l | grep -i ftp
+dpkg -l | grep -i talk
+dpkg -l | grep -i finger
+dpkg -l | grep -i telnet
+dpkg -l | grep -i samba
+dpkg -l | grep -i smb
+dpkg -l | grep -i transmission
+dpkg -l | grep -i torrent
+dpkg -l | grep -i msn
+dpkg -l | grep -i pidgin
+dpkg -l | grep -i pptp
+dpkg -l | grep -i ppp
+dpkg -l | grep -i openconnect
+dpkg -l | grep -i vpn
+dpkg -l | grep -i rsh
+dpkg -l | grep -i rlogin
+dpkg -l | grep -i rtp
+dpkg -l | grep -i rdate
+dpkg -l | grep -i rsync
+dpkg -l | grep -i vino
+dpkg -l | grep -i vinagre
+dpkg -l | grep -i nfs
+dpkg -l | grep -i ypbind
+dpkg -l | grep -i raid
+dpkg -l | grep -i rpc
+dpkg -l | grep -i blue
+
+# Entrar al menú principal -> Settings Manager -> Additional Drivers (en la sección Hardware) -> en la pestaña Additional Drivers -> marcar "Using NVIDIA binary driver - version 331.38 from nvidia-331 (propietary, tested)" -> click en el botón Apply Changes (pide password) -> click en Restart
+
+#Obtener los nombres de los usuarios
+ls -1 /home > users
+
+# cambiar variables de ambiente a:
+# export PATH=$JAVA_HOME/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/cuda/bin
+# export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:/usr/local/cuda/lib64/:/lib32:/usr/lib32
+
+#Variables de ambiente de usuarios
+cat users | while read LINE
+do
+  if [ -s /home/$LINE/.bashrc ]; then
+    echo "export JAVA_HOME=/usr/java/default" >> /home/$LINE/.bashrc
+    echo "export JAVA_HOME=/usr/java/default" >> /root/.bashrc
+    echo "export ANDROID=/home/$LINE/Development/adt-bundle-linux-x86_64-20140702" >> /home/$LINE/.bashrc
+    echo "export ANDROID=/home/$LINE/Development/adt-bundle-linux-x86_64-20140702" >> /root/.bashrc
+    if [ $1 -eq 1 ] # Si CUDA
+    then
+      echo "export PATH=\$JAVA_HOME/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/cuda/bin:\$ANDROID/eclipse:\$ANDROID/sdk/platform-tools" >> /home/$LINE/.bashrc
+      echo "export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:/usr/local/cuda/lib64:/lib32:/usr/lib32" >> /home/$LINE/.bashrc
+    else
+      echo "export PATH=\$JAVA_HOME/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:\$ANDROID/eclipse:\$ANDROID/sdk/platform-tools" >> /home/$LINE/.bashrc
+      echo "export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:/lib32:/usr/lib32" >> /home/$LINE/.bashrc
+    fi
+    echo "export CLASSPATH=\$JAVA_HOME/jre/lib/rt.jar:." >> /home/$LINE/.bashrc
+  fi
+done
+
+# variables de ambiente de root
+if [ $1 -eq 1 ] # Si CUDA
+then
+  echo "export PATH=\$JAVA_HOME/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/cuda/bin:\$ANDROID/eclipse:\$ANDROID/sdk/platform-tools" >> /root/.bashrc
+  echo "export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:/usr/local/cuda/lib64:/lib32:/usr/lib32" >> /root/.bashrc
+else
+  echo "export PATH=\$JAVA_HOME/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:\$ANDROID/eclipse:\$ANDROID/sdk/platform-tools" >> /root/.bashrc
+  echo "export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:/lib32:/usr/lib32" >> /root/.bashrc
+fi
+echo "export CLASSPATH=\$JAVA_HOME/jre/lib/rt.jar:." >> /root/.bashrc
+source /root/.bashrc
+
+rm users
+
+# Desinstalar Java
+if [ $5 -eq 1 ]
+then
+  dpkg -r --force-depends openjdk-7-jre openjdk-7-jre-headless
+  dpkg -r tzdata-java
+  dpkg -r --force-depends java-common default-jre default-jre-headless openjdk-7-jre-headless
+  dpkg -r icedtea-7-jre-jamvm
+  dpkg -P --force-depends openjdk-7-jre-headless java-common
+  dpkg -r --force-depends libservlet3.0-java ca-certificates-java libatk-wrapper-java libatk-wrapper-java-jni libhsqldb1.8.0-java
+  dpkg -P  ca-certificates-java libatk-wrapper-java-jni
+  dpkg -r libreoffice-sdbc-hsqldb
+fi
+
+# Instalar Java
+wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u11-b12/jdk-8u11-linux-x64.tar.gz
+mkdir /usr/java
+mv jdk-8u11-linux-x64.tar.gz /usr/java
+cd /usr/java
+tar zxvf jdk-8u11-linux-x64.tar.gz
+ln -s jdk1.8.0_11 latest
+ln -s latest default
+ln -s /usr/java/default/jre/lib/amd64/libnpjp2.so /usr/lib/mozilla/plugins/libnpjp2.so
+mkdir /etc/.java
+mkdir /etc/.java/deployment
+echo "deployment.system.config.mandatory=TRUE" >> /etc/.java/deployment/deployment.config
+echo "deployment.system.config=file\:/etc/.java/deployment/deployment.properties" >> /etc/.java/deployment/deployment.config
+echo "deployment.security.level=MEDIUM" >> /etc/.java/deployment/deployment.properties
+cd
+
+java -version
+javac -version
+
+
+# cerrar servicios
+apt-get install -y nmap
+nmap -sTU localhost
+service avahi-daemon stop
+service cups-browsed stop
+service cups stop
+echo "manual" >> /etc/init/avahi-daemon.override
+echo "manual" >> /etc/init/cups-browsed.override
+echo "manual" >> /etc/init/cups.override
+
+# para OpenGL y CUDA
+apt-get install -y freeglut3
+apt-get install -y freeglut3-dev
+
+# service lightdm stop
+# service lightdm start
+# NO funciona wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1304/x86_64/cuda-repo-ubuntu1304_6.0-37_amd64.deb
+# NO funciona dpkg -i cuda-repo-ubuntu1304_6.0-37_amd64.deb 
+if [ $1 -eq 1 ] # si CUDA
+then
+  wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1204/x86_64/cuda-repo-ubuntu1204_5.5-0_amd64.deb
+  dpkg -i cuda-repo-ubuntu1204_5.5-0_amd64.deb
+  apt-get update
+  apt-cache search cuda
+# pero vuelve a instalar openjdk
+  apt-get install -y cuda
+  rm cuda-repo-ubuntu1204_5.5-0_amd64.deb
+fi
+# Reading package lists... Done
+# Building dependency tree       
+# Reading state information... Done
+# The following extra packages will be installed:
+#   build-essential ca-certificates-java cuda-6-0 cuda-command-line-tools-6-0
+#   cuda-core-6-0 cuda-core-libs-6-0 cuda-documentation-6-0 cuda-drivers
+#   cuda-extra-libs-6-0 cuda-headers-6-0 cuda-license-6-0 cuda-misc-6-0
+#   cuda-samples-6-0 cuda-toolkit-6-0 cuda-visual-tools-6-0 default-jre
+#   default-jre-headless dpkg-dev icedtea-7-jre-jamvm java-common
+#   libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl
+#   libatk-wrapper-java libatk-wrapper-java-jni libcuda1-331 libdpkg-perl
+#   libxi-dev libxmu-dev libxmu-headers nvidia-331 nvidia-331-dev nvidia-331-uvm
+#   nvidia-libopencl1-331 nvidia-modprobe nvidia-opencl-icd-331 nvidia-settings
+#   openjdk-7-jre openjdk-7-jre-headless tzdata-java
+# Suggested packages:
+#   debian-keyring equivs icedtea-7-plugin sun-java6-fonts fonts-ipafont-gothic
+#   fonts-ipafont-mincho ttf-wqy-microhei ttf-wqy-zenhei ttf-telugu-fonts
+#   ttf-oriya-fonts ttf-kannada-fonts ttf-bengali-fonts
+# The following NEW packages will be installed:
+#   build-essential ca-certificates-java cuda cuda-6-0
+#   cuda-command-line-tools-6-0 cuda-core-6-0 cuda-core-libs-6-0
+#   cuda-documentation-6-0 cuda-drivers cuda-extra-libs-6-0 cuda-headers-6-0
+#   cuda-license-6-0 cuda-misc-6-0 cuda-samples-6-0 cuda-toolkit-6-0
+#   cuda-visual-tools-6-0 default-jre default-jre-headless dpkg-dev
+#   icedtea-7-jre-jamvm java-common libalgorithm-diff-perl
+#   libalgorithm-diff-xs-perl libalgorithm-merge-perl libatk-wrapper-java
+#   libatk-wrapper-java-jni libxi-dev libxmu-dev libxmu-headers nvidia-331-dev
+#   nvidia-331-uvm nvidia-modprobe openjdk-7-jre openjdk-7-jre-headless
+#   tzdata-java
+# The following packages will be upgraded:
+#   libcuda1-331 libdpkg-perl nvidia-331 nvidia-libopencl1-331
+#   nvidia-opencl-icd-331 nvidia-settings
+# 6 upgraded, 35 newly installed, 0 to remove and 251 not upgraded.
+# Need to get 821 MB/861 MB of archives.
+# After this operation, 1.414 MB of additional disk space will be used.
+# Do you want to continue? [Y/n] Y
+
+# apt-get install -y nvidia-nsight
+
+# antes de instalar cuda:
+# dpkg -l | grep -i cuda
+# ii  cuda-repo-ubuntu1204                        5.5-0                                 amd64        CUDA repo configuration files.
+# ii  libcuda1-331                                331.38-0ubuntu7                       amd64        NVIDIA CUDA runtime library
+# dpkg -l | grep -i nvidia
+# ii  bbswitch-dkms                               0.7-2ubuntu1                          amd64        Interface for toggling the power on nVidia Optimus video cards
+# ii  libcuda1-331                                331.38-0ubuntu7                       amd64        NVIDIA CUDA runtime library
+# ii  nvidia-331                                  331.38-0ubuntu7                       amd64        NVIDIA binary driver - version 331.38
+# ii  nvidia-libopencl1-331                       331.38-0ubuntu7                       amd64        NVIDIA OpenCL Driver and ICD Loader library
+# ii  nvidia-opencl-icd-331                       331.38-0ubuntu7                       amd64        NVIDIA OpenCL ICD
+# ii  nvidia-prime                                0.6.2                                 amd64        Tools to enable NVIDIA's Prime
+# ii  nvidia-settings                             331.20-0ubuntu8                       amd64        Tool for configuring the NVIDIA graphics driver
+
+# después de instalar cuda:
+dpkg -l | grep -i cuda
+# ii  cuda                                        6.0-37                                amd64        CUDA meta-package
+# ii  cuda-6-0                                    6.0-37                                amd64        CUDA 6.0 meta-package
+# ii  cuda-command-line-tools-6-0                 6.0-37                                amd64        CUDA command-line tools
+# ii  cuda-core-6-0                               6.0-37                                amd64        CUDA core tools
+# ii  cuda-core-libs-6-0                          6.0-37                                amd64        CUDA native runtime library
+# ii  cuda-documentation-6-0                      6.0-37                                amd64        CUDA documentation
+# ii  cuda-drivers                                331.62-1                              amd64        CUDA Driver meta-package
+# ii  cuda-extra-libs-6-0                         6.0-37                                amd64        CUDA native libraries
+# ii  cuda-headers-6-0                            6.0-37                                amd64        CUDA native headers
+# ii  cuda-license-6-0                            6.0-37                                amd64        CUDA licenses
+# ii  cuda-misc-6-0                               6.0-37                                amd64        CUDA miscellaneous tools
+# ii  cuda-repo-ubuntu1204                        5.5-0                                 amd64        CUDA repo configuration files.
+# ii  cuda-samples-6-0                            6.0-37                                amd64        CUDA example applications
+# ii  cuda-toolkit-6-0                            6.0-37                                amd64        CUDA Toolkit 6.0 meta-package
+# ii  cuda-visual-tools-6-0                       6.0-37                                amd64        CUDA visual tools
+# ii  libcuda1-331                                331.62-0ubuntu1                       amd64        NVIDIA CUDA runtime library
+dpkg -l | grep -i nvidia
+# ii  bbswitch-dkms                               0.7-2ubuntu1                          amd64        Interface for toggling the power on nVidia Optimus video cards
+# ii  libcuda1-331                                331.62-0ubuntu1                       amd64        NVIDIA CUDA runtime library
+# ii  nvidia-331                                  331.62-0ubuntu1                       amd64        NVIDIA binary driver - version 331.62
+# ii  nvidia-331-dev                              331.62-0ubuntu1                       amd64        NVIDIA binary Xorg driver development files
+# ii  nvidia-331-uvm                              331.62-0ubuntu1                       amd64        NVIDIA Unified Memory kernel module
+# ii  nvidia-libopencl1-331                       331.62-0ubuntu1                       amd64        NVIDIA OpenCL Driver and ICD Loader library
+# ii  nvidia-modprobe                             331.62-0ubuntu1                       amd64        Load the NVIDIA kernel driver and create device files
+# ii  nvidia-opencl-icd-331                       331.62-0ubuntu1                       amd64        NVIDIA OpenCL ICD
+# ii  nvidia-prime                                0.6.2                                 amd64        Tools to enable NVIDIA's Prime
+# ii  nvidia-settings                             331.62-0ubuntu1                       amd64        Tool for configuring the NVIDIA graphics driver
+
+
+nvcc --version
+# nvcc: NVIDIA (R) Cuda compiler driver
+# Copyright (c) 2005-2013 NVIDIA Corporation
+# Built on Thu_Mar_13_11:58:58_PDT_2014
+# Cuda compilation tools, release 6.0, V6.0.1
+
+
+# Ver para otras opciones: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
+# Instaladores a mano .deb en http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1304/x86_64/
+
+if [ $2 -eq 1 ] # si se quiere LATEX
+then
+  #Instalacion de LATEX -- Esta parte dura bastante, se descargan cerca de 2GB
+  apt-get install -y texlive-full
+  #Descarga de TexMaker: Ide para latex
+  wget http://www.xm1math.net/texmaker/texmaker_ubuntu_14.04_4.2_amd64.deb
+  dpkg -i texmaker_ubuntu_14.04_4.2_amd64.deb 
+fi
+
+# otros paquetes:
+if [ $4 -eq 1 ] # si se quiere netbeans
+then
+  apt-get install -y netbeans
+fi
+apt-get install -y libc6:i386
+apt-get install -y libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386
+wget http://dl.google.com/android/adt/adt-bundle-linux-x86_64-20140702.zip
+unzip adt-bundle-linux-x86_64-20140702.zip
+ls -1 /home > users
+cat users | while read LINE
+do
+  mkdir /home/$LINE/Development
+  mv adt-bundle-linux-x86_64-20140702 /home/$LINE/Development
+  chown -R $LINE.$LINE /home/$LINE/Development
+done
+rm users
+
+if [ $3 -eq 1 ] # si se quiere STEAM ]
+then
+  # Bajar steam de http://store.steampowered.com/about/
+  apt-get install -y curl
+  dpkg -i steam_latest.deb
+fi
+
+if [ $6 -eq 1 ] #Si instalamos ruby, python y R
+then
+    apt-get install -y git 
+    apt-get install -y git-core 
+    apt-get install -y curl 
+    apt-get install -y zlib1g-dev 
+    apt-get install -y build-essential 
+    apt-get install -y libssl-dev 
+    apt-get install -y libreadline-dev 
+    apt-get install -y libyaml-dev 
+    apt-get install -y libsqlite3-dev 
+    apt-get install -y sqlite3 
+    apt-get install -y libxml2-dev 
+    apt-get install -y libxslt1-dev 
+    apt-get install -y libcurl4-openssl-dev 
+    apt-get install -y python-software-properties libffi-dev
+    ##Instalacion de ruby
+    cd
+    wget http://ftp.ruby-lang.org/pub/ruby/2.2/ruby-2.2.23.tar.gz
+    tar -xzvf ruby-2.2.3.tar.gz
+    cd ruby-2.2.3/
+    ./configure
+    make
+    make install
+    ruby -v
+    
+    echo "gem: --no-ri --no-rdoc" > ~/.gemrc
+    gem install bundler
+    
+    ##Instalacion de rails
+    add-apt-repository ppa:chris-lea/node.js
+    apt-get update
+    apt-get install nodejs
+    gem install rails -v 4.2.4
+    rails -v
+	
+    ##instalacion sshd
+    apt-get install -y openssh-server    
+
+    ##Instalacion de R
+    apt-get install r-base
+
+    ##instalacion de gnuplot
+    apt-get install gnuplot
+fi
+
