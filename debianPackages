@@ -1,5 +1,5 @@
 #!/bin/bash
-if [-z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ]
+if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ]
 then 
    echo "Faltan opciones"
    echo "./Debian_Packages A B C D E F"
@@ -12,21 +12,19 @@ then
   echo "       F Si deseas que se instalen ruby (con la gema rails), R, asi como la herramienta git"
   exit 1
 fi
-whoami > quien
-cat quien
-a = "usuario"
-echo $a
-cat quien | while read LINE
-do
-##si no eres root no puedes pasar de aqui
-  if [[$LINE != *"root"*]]
-  then
-     echo "Debes ser root para poder correr el script (no se puede con sudo)"
-    exit 1
-  fi
-done
-rm quien
+
+FILE="/tmp/out.$$"
+GREP="/bin/grep"
+#....
+# Make sure only root can run our script
+if [ "$(id -u)" != "0" ]; then
+   echo "¡NECESITAS SER ROOT!"
+   exit 1
+fi
+
 echo "listo para instalar"
+
+apt-get update
 
 ##instalas los paquetes que faltan
 apt-get install -y g++
@@ -370,4 +368,7 @@ then
     ##instalacion de gnuplot
     apt-get install gnuplot
 fi
+
+apt-get autoremove -y 
+apt-get clean
 
