@@ -1,8 +1,8 @@
 #!/bin/bash
 if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ]
 then 
-   echo "Faltan opciones"
-   echo "./Debian_Packages A B C D E F"
+  echo "Faltan opciones"
+  echo "./Debian_Packages A B C D E F"
   echo "donde: N es la versión del script"
   echo "       A es 1 si se quiere instalar CUDA y además se tiene una tarjeta de video NVIDIA o 0 si no"
   echo "       B es 1 si se quire instalar LATEX para escribir papers o 0 si no"
@@ -27,9 +27,9 @@ echo "listo para instalar"
 apt-get update
 
 ##instalas los paquetes que faltan
-apt-get install -y g++
-apt-get install -y k3b
-apt-get install -y xfce4-xkb-plugin
+apt-get install -y g++                #instala el compilador de C/C++
+apt-get install -y k3b                #instala k3b para quemar CD/DVD
+apt-get install -y xfce4-xkb-plugin   #para mostrar y cambiar layouts de teclado
 
 ##Instalacion de chrome
 ## https://www.google.com/intl/en/chrome/browser/
@@ -138,14 +138,14 @@ rm users
 # Desinstalar Java
 if [ $5 -eq 1 ]
 then
-  dpkg -r --force-depends openjdk-7-jre openjdk-7-jre-headless
-  dpkg -r tzdata-java
-  dpkg -r --force-depends java-common default-jre default-jre-headless openjdk-7-jre-headless
-  dpkg -r icedtea-7-jre-jamvm
-  dpkg -P --force-depends openjdk-7-jre-headless java-common
-  dpkg -r --force-depends libservlet3.0-java ca-certificates-java libatk-wrapper-java libatk-wrapper-java-jni libhsqldb1.8.0-java
-  dpkg -P  ca-certificates-java libatk-wrapper-java-jni
-  dpkg -r libreoffice-sdbc-hsqldb
+  # dpkg -r --force-depends openjdk-7-jre openjdk-7-jre-headless
+  # dpkg -r tzdata-java
+  # dpkg -r --force-depends java-common default-jre default-jre-headless openjdk-7-jre-headless
+  # dpkg -r icedtea-7-jre-jamvm
+  # dpkg -P --force-depends openjdk-7-jre-headless java-common
+  # dpkg -r --force-depends libservlet3.0-java ca-certificates-java libatk-wrapper-java libatk-wrapper-java-jni libhsqldb1.8.0-java
+  # dpkg -P  ca-certificates-java libatk-wrapper-java-jni
+  # dpkg -r libreoffice-sdbc-hsqldb+
 fi
 
 # Instalar Java
@@ -179,8 +179,8 @@ echo "manual" >> /etc/init/cups-browsed.override
 echo "manual" >> /etc/init/cups.override
 
 # para OpenGL y CUDA
-apt-get install -y freeglut3
-apt-get install -y freeglut3-dev
+apt-get install -y freeglut3      #Para programar en openGL, dependencia
+apt-get install -y freeglut3-dev  #para programar en OpenGL
 
 # service lightdm stop
 # service lightdm start
@@ -196,95 +196,6 @@ then
   apt-get install -y cuda
   rm cuda-repo-ubuntu1204_5.5-0_amd64.deb
 fi
-# Reading package lists... Done
-# Building dependency tree       
-# Reading state information... Done
-# The following extra packages will be installed:
-#   build-essential ca-certificates-java cuda-6-0 cuda-command-line-tools-6-0
-#   cuda-core-6-0 cuda-core-libs-6-0 cuda-documentation-6-0 cuda-drivers
-#   cuda-extra-libs-6-0 cuda-headers-6-0 cuda-license-6-0 cuda-misc-6-0
-#   cuda-samples-6-0 cuda-toolkit-6-0 cuda-visual-tools-6-0 default-jre
-#   default-jre-headless dpkg-dev icedtea-7-jre-jamvm java-common
-#   libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl
-#   libatk-wrapper-java libatk-wrapper-java-jni libcuda1-331 libdpkg-perl
-#   libxi-dev libxmu-dev libxmu-headers nvidia-331 nvidia-331-dev nvidia-331-uvm
-#   nvidia-libopencl1-331 nvidia-modprobe nvidia-opencl-icd-331 nvidia-settings
-#   openjdk-7-jre openjdk-7-jre-headless tzdata-java
-# Suggested packages:
-#   debian-keyring equivs icedtea-7-plugin sun-java6-fonts fonts-ipafont-gothic
-#   fonts-ipafont-mincho ttf-wqy-microhei ttf-wqy-zenhei ttf-telugu-fonts
-#   ttf-oriya-fonts ttf-kannada-fonts ttf-bengali-fonts
-# The following NEW packages will be installed:
-#   build-essential ca-certificates-java cuda cuda-6-0
-#   cuda-command-line-tools-6-0 cuda-core-6-0 cuda-core-libs-6-0
-#   cuda-documentation-6-0 cuda-drivers cuda-extra-libs-6-0 cuda-headers-6-0
-#   cuda-license-6-0 cuda-misc-6-0 cuda-samples-6-0 cuda-toolkit-6-0
-#   cuda-visual-tools-6-0 default-jre default-jre-headless dpkg-dev
-#   icedtea-7-jre-jamvm java-common libalgorithm-diff-perl
-#   libalgorithm-diff-xs-perl libalgorithm-merge-perl libatk-wrapper-java
-#   libatk-wrapper-java-jni libxi-dev libxmu-dev libxmu-headers nvidia-331-dev
-#   nvidia-331-uvm nvidia-modprobe openjdk-7-jre openjdk-7-jre-headless
-#   tzdata-java
-# The following packages will be upgraded:
-#   libcuda1-331 libdpkg-perl nvidia-331 nvidia-libopencl1-331
-#   nvidia-opencl-icd-331 nvidia-settings
-# 6 upgraded, 35 newly installed, 0 to remove and 251 not upgraded.
-# Need to get 821 MB/861 MB of archives.
-# After this operation, 1.414 MB of additional disk space will be used.
-# Do you want to continue? [Y/n] Y
-
-# apt-get install -y nvidia-nsight
-
-# antes de instalar cuda:
-# dpkg -l | grep -i cuda
-# ii  cuda-repo-ubuntu1204                        5.5-0                                 amd64        CUDA repo configuration files.
-# ii  libcuda1-331                                331.38-0ubuntu7                       amd64        NVIDIA CUDA runtime library
-# dpkg -l | grep -i nvidia
-# ii  bbswitch-dkms                               0.7-2ubuntu1                          amd64        Interface for toggling the power on nVidia Optimus video cards
-# ii  libcuda1-331                                331.38-0ubuntu7                       amd64        NVIDIA CUDA runtime library
-# ii  nvidia-331                                  331.38-0ubuntu7                       amd64        NVIDIA binary driver - version 331.38
-# ii  nvidia-libopencl1-331                       331.38-0ubuntu7                       amd64        NVIDIA OpenCL Driver and ICD Loader library
-# ii  nvidia-opencl-icd-331                       331.38-0ubuntu7                       amd64        NVIDIA OpenCL ICD
-# ii  nvidia-prime                                0.6.2                                 amd64        Tools to enable NVIDIA's Prime
-# ii  nvidia-settings                             331.20-0ubuntu8                       amd64        Tool for configuring the NVIDIA graphics driver
-
-# después de instalar cuda:
-dpkg -l | grep -i cuda
-# ii  cuda                                        6.0-37                                amd64        CUDA meta-package
-# ii  cuda-6-0                                    6.0-37                                amd64        CUDA 6.0 meta-package
-# ii  cuda-command-line-tools-6-0                 6.0-37                                amd64        CUDA command-line tools
-# ii  cuda-core-6-0                               6.0-37                                amd64        CUDA core tools
-# ii  cuda-core-libs-6-0                          6.0-37                                amd64        CUDA native runtime library
-# ii  cuda-documentation-6-0                      6.0-37                                amd64        CUDA documentation
-# ii  cuda-drivers                                331.62-1                              amd64        CUDA Driver meta-package
-# ii  cuda-extra-libs-6-0                         6.0-37                                amd64        CUDA native libraries
-# ii  cuda-headers-6-0                            6.0-37                                amd64        CUDA native headers
-# ii  cuda-license-6-0                            6.0-37                                amd64        CUDA licenses
-# ii  cuda-misc-6-0                               6.0-37                                amd64        CUDA miscellaneous tools
-# ii  cuda-repo-ubuntu1204                        5.5-0                                 amd64        CUDA repo configuration files.
-# ii  cuda-samples-6-0                            6.0-37                                amd64        CUDA example applications
-# ii  cuda-toolkit-6-0                            6.0-37                                amd64        CUDA Toolkit 6.0 meta-package
-# ii  cuda-visual-tools-6-0                       6.0-37                                amd64        CUDA visual tools
-# ii  libcuda1-331                                331.62-0ubuntu1                       amd64        NVIDIA CUDA runtime library
-dpkg -l | grep -i nvidia
-# ii  bbswitch-dkms                               0.7-2ubuntu1                          amd64        Interface for toggling the power on nVidia Optimus video cards
-# ii  libcuda1-331                                331.62-0ubuntu1                       amd64        NVIDIA CUDA runtime library
-# ii  nvidia-331                                  331.62-0ubuntu1                       amd64        NVIDIA binary driver - version 331.62
-# ii  nvidia-331-dev                              331.62-0ubuntu1                       amd64        NVIDIA binary Xorg driver development files
-# ii  nvidia-331-uvm                              331.62-0ubuntu1                       amd64        NVIDIA Unified Memory kernel module
-# ii  nvidia-libopencl1-331                       331.62-0ubuntu1                       amd64        NVIDIA OpenCL Driver and ICD Loader library
-# ii  nvidia-modprobe                             331.62-0ubuntu1                       amd64        Load the NVIDIA kernel driver and create device files
-# ii  nvidia-opencl-icd-331                       331.62-0ubuntu1                       amd64        NVIDIA OpenCL ICD
-# ii  nvidia-prime                                0.6.2                                 amd64        Tools to enable NVIDIA's Prime
-# ii  nvidia-settings                             331.62-0ubuntu1                       amd64        Tool for configuring the NVIDIA graphics driver
-
-
-nvcc --version
-# nvcc: NVIDIA (R) Cuda compiler driver
-# Copyright (c) 2005-2013 NVIDIA Corporation
-# Built on Thu_Mar_13_11:58:58_PDT_2014
-# Cuda compilation tools, release 6.0, V6.0.1
-
 
 # Ver para otras opciones: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
 # Instaladores a mano .deb en http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1304/x86_64/
@@ -301,9 +212,12 @@ fi
 # otros paquetes:
 if [ $4 -eq 1 ] # si se quiere netbeans
 then
-  apt-get install -y netbeans
+  apt-get install -y netbeans #version antigua, cambiar por una forma de descargar al version mas recietne
+  #agregar la descarga e instalacion del debugger
+  #agregar la descarga e instalacion del make
+  #revisar si ya se tienen el jre y jdk para net beans 
 fi
-apt-get install -y libc6:i386
+apt-get install -y libc6:i386                                                   #GNU C Library: 32-bit shared libraries for AMD64
 apt-get install -y libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386
 wget http://dl.google.com/android/adt/adt-bundle-linux-x86_64-20140702.zip
 unzip adt-bundle-linux-x86_64-20140702.zip
@@ -323,7 +237,7 @@ then
   dpkg -i steam_latest.deb
 fi
 
-if [ $6 -eq 1 ] #Si instalamos ruby, python y R
+if [ $6 -eq 1 ] #Si instalamos Git, ruby, python y R
 then
     apt-get install -y git 
     apt-get install -y git-core 
@@ -367,6 +281,9 @@ then
 
     ##instalacion de gnuplot
     apt-get install gnuplot
+
+    ##Instalacion de GNU Octave
+    apt-get install octave
 fi
 
 apt-get autoremove -y 
