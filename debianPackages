@@ -146,6 +146,7 @@ then
   # dpkg -r --force-depends libservlet3.0-java ca-certificates-java libatk-wrapper-java libatk-wrapper-java-jni libhsqldb1.8.0-java
   # dpkg -P  ca-certificates-java libatk-wrapper-java-jni
   # dpkg -r libreoffice-sdbc-hsqldb+
+  echo "pass" #arreglando el error
 fi
 
 # Instalar Java
