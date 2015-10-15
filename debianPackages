@@ -3,13 +3,13 @@ if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ]
 then 
   echo "Faltan opciones"
   echo "./Debian_Packages A B C D E F"
-  echo "donde: N es la versión del script"
+  #echo "donde: N es la versión del script"
   echo "       A es 1 si se quiere instalar CUDA y además se tiene una tarjeta de video NVIDIA o 0 si no"
   echo "       B es 1 si se quire instalar LATEX para escribir papers o 0 si no"
   echo "       C es 1 si se quiere instalar STEAM para juegos o 0 si no"
   echo "       D es 1 si se quiere instalar Netbeans o 0 si no"
   echo "       E es 1 si no se instaló Netbeans ni CUDA y se quiere quitar el otro java de linux (ya que si se instalará el Java de Oracle) o 0 si no se quiere quitar"
-  echo "       F Si deseas que se instalen ruby (con la gema rails), R, asi como la herramienta git"
+  echo "       F es 1 si se quiere el kit de programadores (git, R, octave, ruby, rails)"
   exit 1
 fi
 
@@ -214,8 +214,8 @@ fi
 if [ $4 -eq 1 ] # si se quiere netbeans
 then
   apt-get install -y netbeans #version antigua, cambiar por una forma de descargar al version mas recietne
-  #agregar la descarga e instalacion del debugger
-  #agregar la descarga e instalacion del make
+  #agregar la descarga e instalacion del debugger (gdb)
+  #agregar la descarga e instalacion del make y cmake y qmake 
   #revisar si ya se tienen el jre y jdk para net beans 
 fi
 apt-get install -y libc6:i386                                                   #GNU C Library: 32-bit shared libraries for AMD64
@@ -233,9 +233,22 @@ rm users
 
 if [ $3 -eq 1 ] # si se quiere STEAM ]
 then
+  #outdated
   # Bajar steam de http://store.steampowered.com/about/
-  apt-get install -y curl
-  dpkg -i steam_latest.deb
+  #apt-get install -y curl
+  #dpkg -i steam_latest.deb
+  
+  #para debian 8 jessie
+  #agregar a /etc/apt/sources.list 
+  #deb http://http.debian.net/debian/ jessie main contrib non-free
+  echo "deb http://http.debian.net/debian/ jessie main contrib non-free" >> /etc/apt/sources.list 
+  dpkg --add-architecture i386 #habilitar multi-arch
+  aptitude update
+  aptitude install steam
+  aptitude install libgl1-nvidia-glx:i386  #agregar nvidia graphics hardware
+  aptitude install libgl1-fglrx-glx:i386    #agregar ATI/AMD  graphics hardware
+  ###falta determinar que tarjeta grafica tiene el usuario para instalar los drivers apropiados
+
 fi
 
 if [ $6 -eq 1 ] #Si instalamos Git, ruby, python y R
