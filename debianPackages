@@ -80,6 +80,8 @@ apt-get isntall -y make               #make, para hacer ejecutables
 apt-get install -y cmake              #open source cross platform make 
 apt-get install -y cmake-curses-gui   #
 apt-get install vim                   #debian no lo tiene por default asi que lo instalamos
+apt-get install -y dia-libs           #diagramas
+
 
 #### drivers wifi
 apt-add-repository 'deb http://http.debian.net/debian/ jessie main contrib non-free'
@@ -87,6 +89,10 @@ apt-get update
 apt-get -y install firmware-iwlwifi
 modprobe -r iwlwifi ; modprobe iwlwifi
 ## fin drivers wifi
+
+add-apt-repository ppa:kirillshkrogalev/ffmpeg-next
+apt-get update
+apt-get install -y ffmpeg
 
 
 ##Instalacion de chrome
