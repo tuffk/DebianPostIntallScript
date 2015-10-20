@@ -1,8 +1,8 @@
 #!/bin/bash
-if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ]
+if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ] || [ -z $7] || [ -z $8]
 then 
   echo "Faltan opciones"
-  echo "./Debian_Packages A B C D E F"
+  echo "./Debian_Packages A B C D E F G H"
   #echo "donde: N es la versión del script"
   echo "       A es 1 si se quiere instalar CUDA y además se tiene una tarjeta de video NVIDIA o 0 si no"
   echo "       B es 1 si se quire instalar LATEX para escribir papers o 0 si no"
@@ -10,6 +10,8 @@ then
   echo "       D es 1 si se quiere instalar Netbeans o 0 si no"
   echo "       E es 1 si no se instaló Netbeans ni CUDA y se quiere quitar el otro java de linux (ya que si se instalará el Java de Oracle) o 0 si no se quiere quitar"
   echo "       F es 1 si se quiere el kit de programadores (git, R, octave, ruby, rails)"
+  echo "       G es 1 si se quiere code lite (ide)"
+  echo "       H es 1 si se quiere code blocks (ide)"
   exit 1
 fi
 
@@ -24,12 +26,20 @@ fi
 
 echo "listo para instalar"
 
+##detectar arquitectura con "arch"
+##output para 64 bits :  x86_64
+
+
 apt-get update
 
 ##instalas los paquetes que faltan
 apt-get install -y g++                #instala el compilador de C/C++
 apt-get install -y k3b                #instala k3b para quemar CD/DVD
 apt-get install -y xfce4-xkb-plugin   #para mostrar y cambiar layouts de teclado
+apt-get install -y gdb                #debugger de c/c++
+apt-get isntall -y make               #make, para hacer ejecutables
+apt-get install vim                   #debian no lo tiene por default asi que lo instalamos
+
 
 ##Instalacion de chrome
 ## https://www.google.com/intl/en/chrome/browser/
@@ -61,36 +71,6 @@ dpkg -r bluez bluez-cups bluez-alsa
 dpkg -P bluez
 dpkg -r xchat xchat-common xchat-indicator
 dpkg -P xchat
-
-##checamos los demas paqutes
-dpkg -l | grep -i mail
-dpkg -l | grep -i evolution
-dpkg -l | grep -i ftp
-dpkg -l | grep -i talk
-dpkg -l | grep -i finger
-dpkg -l | grep -i telnet
-dpkg -l | grep -i samba
-dpkg -l | grep -i smb
-dpkg -l | grep -i transmission
-dpkg -l | grep -i torrent
-dpkg -l | grep -i msn
-dpkg -l | grep -i pidgin
-dpkg -l | grep -i pptp
-dpkg -l | grep -i ppp
-dpkg -l | grep -i openconnect
-dpkg -l | grep -i vpn
-dpkg -l | grep -i rsh
-dpkg -l | grep -i rlogin
-dpkg -l | grep -i rtp
-dpkg -l | grep -i rdate
-dpkg -l | grep -i rsync
-dpkg -l | grep -i vino
-dpkg -l | grep -i vinagre
-dpkg -l | grep -i nfs
-dpkg -l | grep -i ypbind
-dpkg -l | grep -i raid
-dpkg -l | grep -i rpc
-dpkg -l | grep -i blue
 
 # Entrar al menú principal -> Settings Manager -> Additional Drivers (en la sección Hardware) -> en la pestaña Additional Drivers -> marcar "Using NVIDIA binary driver - version 331.38 from nvidia-331 (propietary, tested)" -> click en el botón Apply Changes (pide password) -> click en Restart
 
@@ -157,6 +137,7 @@ cd /usr/java
 tar zxvf jdk-8u11-linux-x64.tar.gz
 ln -s jdk1.8.0_11 latest
 ln -s latest default
+#cambiar variables de ambiene
 ln -s /usr/java/default/jre/lib/amd64/libnpjp2.so /usr/lib/mozilla/plugins/libnpjp2.so
 mkdir /etc/.java
 mkdir /etc/.java/deployment
@@ -164,9 +145,6 @@ echo "deployment.system.config.mandatory=TRUE" >> /etc/.java/deployment/deployme
 echo "deployment.system.config=file\:/etc/.java/deployment/deployment.properties" >> /etc/.java/deployment/deployment.config
 echo "deployment.security.level=MEDIUM" >> /etc/.java/deployment/deployment.properties
 cd
-
-java -version
-javac -version
 
 
 # cerrar servicios
@@ -210,14 +188,7 @@ then
   dpkg -i texmaker_ubuntu_14.04_4.2_amd64.deb 
 fi
 
-# otros paquetes:
-if [ $4 -eq 1 ] # si se quiere netbeans
-then
-  apt-get install -y netbeans #version antigua, cambiar por una forma de descargar al version mas recietne
-  #agregar la descarga e instalacion del debugger (gdb)
-  #agregar la descarga e instalacion del make y cmake y qmake 
-  #revisar si ya se tienen el jre y jdk para net beans 
-fi
+
 apt-get install -y libc6:i386                                                   #GNU C Library: 32-bit shared libraries for AMD64
 apt-get install -y libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386
 wget http://dl.google.com/android/adt/adt-bundle-linux-x86_64-20140702.zip
@@ -303,3 +274,28 @@ fi
 apt-get autoremove -y 
 apt-get clean
 
+if [ $7 -eq 1 ] #si se quiere code lite
+then
+#agregamos el repositorio a la lsita de sources (sources.list)
+apt-key adv --fetch-keys http://repos.codelite.org/CodeLite.asc
+apt-add-repository 'deb http://repos.codelite.org/debian/ jessie contrib'
+apt-get update
+apt-get install -y codelite wxcrafter
+#lo instalamos usando apt-get ya que se agrego a la lsita
+fi
+
+if [ $4 -eq 1 ] # si se quiere netbeans
+then
+  apt-get install -y netbeans #version antigua, cambiar por una forma de descargar al version mas recietne
+#apt-cache search netbeans 
+fi
+
+if [ $8 -eq 1 ] # si se quiere code blocks
+then
+
+apt-add-repository 'deb [arch=amd64,i386] https://apt.jenslody.de/stable jessie main'
+
+sudo apt-get update
+sudo apt-get install jens-lody-debian-keyring
+echo "haz algo aki"
+fi
