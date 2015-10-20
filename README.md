@@ -4,6 +4,8 @@ This script is for Debian 8 _Jessie_
 
 This Bash script will help you install usefull pakages and remove unsecure/old pakages
 
+An internet connection is needed for this script to work correctly
+
 
 ##How to run the script
 
@@ -28,6 +30,7 @@ substitute the letter with 1 if you want to install the following packages or wi
 * make
 * google chrome web browser 
 * java from oracle
+* iwlwifi package with wifi cards drivers
 
 ##packeges removed
 * ftp

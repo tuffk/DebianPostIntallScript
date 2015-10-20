@@ -1,8 +1,8 @@
 #!/bin/bash
-if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ] || [ -z $7] || [ -z $8]
+if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ] || [ -z $7] || [ -z $8] || [ -z $9]
 then 
   echo "Faltan opciones"
-  echo "./Debian_Packages A B C D E F G H"
+  echo "./Debian_Packages A B C D E F G H I"
   #echo "donde: N es la versión del script"
   echo "       A es 1 si se quiere instalar CUDA y además se tiene una tarjeta de video NVIDIA o 0 si no"
   echo "       B es 1 si se quire instalar LATEX para escribir papers o 0 si no"
@@ -12,6 +12,7 @@ then
   echo "       F es 1 si se quiere el kit de programadores (git, R, octave, ruby, rails)"
   echo "       G es 1 si se quiere code lite (ide)"
   echo "       H es 1 si se quiere code blocks (ide)"
+  echo "       I es 1 si se quiere scilab (ide)"
   exit 1
 fi
 
@@ -24,11 +25,49 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+if [ $1 -ne 0 ] && [ $1 -ne 1 ]
+then
+   echo "Caracter no valido en la opcion 1"
+   exit 1
+ elif [ $2 -ne 0 ] && [ $2 -ne 1 ]
+ then
+    echo "Caracter no valido en la opcion 2"
+    exit 1
+ elif [ $3 -ne 0 ] && [ $3 -ne 1 ]
+ then
+    echo "Caracter no valido en la opcion 3"
+    exit 1
+ elif [ $4 -ne 0 ] && [ $4 -ne 1 ]
+ then
+    echo "Caracter no valido en la opcion 4"
+    exit 1
+ elif [ $5 -ne 0 ] && [ $5 -ne 1 ]
+ then
+    echo "Caracter no valido en la opcion 5"
+    exit 1
+  elif [ $6 -ne 0 ] && [ $6 -ne 1 ]
+ then
+    echo "Caracter no valido en la opcion 6"
+    exit 1
+  elif [ $7 -ne 0 ] && [ $7 -ne 1 ]
+ then
+    echo "Caracter no valido en la opcion 7"
+    exit 1
+  elif [ $8 -ne 0 ] && [ $8 -ne 1 ]
+ then
+    echo "Caracter no valido en la opcion 8"
+    exit 1
+  elif [ $9 -ne 0 ] && [ $9 -ne 1 ]
+ then
+    echo "Caracter no valido en la opcion 9"
+    exit 1
+fi
+
 echo "listo para instalar"
 
 ##detectar arquitectura con "arch"
 ##output para 64 bits :  x86_64
-
+arki=$(arch)
 
 apt-get update
 
@@ -36,15 +75,24 @@ apt-get update
 apt-get install -y g++                #instala el compilador de C/C++
 apt-get install -y k3b                #instala k3b para quemar CD/DVD
 apt-get install -y xfce4-xkb-plugin   #para mostrar y cambiar layouts de teclado
-apt-get install -y gdb                #debugger de c/c++
+apt-get install -y gdb                #debugger de C/C++
 apt-get isntall -y make               #make, para hacer ejecutables
+apt-get install -y cmake              #open source cross platform make 
+apt-get install -y cmake-curses-gui   #
 apt-get install vim                   #debian no lo tiene por default asi que lo instalamos
+
+#### drivers wifi
+apt-add-repository 'deb http://http.debian.net/debian/ jessie main contrib non-free'
+apt-get update
+apt-get -y install firmware-iwlwifi
+modprobe -r iwlwifi ; modprobe iwlwifi
+## fin drivers wifi
 
 
 ##Instalacion de chrome
 ## https://www.google.com/intl/en/chrome/browser/
 apt-get install -y libcurl3
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+wget --no-check-certificate https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i google-chrome-stable_current_amd64.deb
 rm google-chrome-stable_current_amd64.deb
 
@@ -71,8 +119,46 @@ dpkg -r bluez bluez-cups bluez-alsa
 dpkg -P bluez
 dpkg -r xchat xchat-common xchat-indicator
 dpkg -P xchat
+dpkg -r printer-driver-postscript-hp
+dpkg -r hplip
+dpkg -P hplip
+dpkg -r hplip-data
+dpkg -r printer-driver-hpcups
+dpkg -r cups-filters-ippusbxd
+dpkg -r printer-driver-pxljr
+dpkg -r printer-driver-foo2zjs
+
+
+###cerrar servicios inseguros
+apt-get install -y nmap
+nmap -sTU localhost
+service avahi-daemon stop
+service cups-browsed stop
+service cups stop
+systemctl stop avahi-daemon.service
+systemctl stop avahi-daemon.socket
+systemctl disable avahi-daemon.service
+systemctl disable avahi-daemon.socket
+systemctl stop cups.path
+systemctl stop cups-browsed.service
+systemctl stop cups.service
+systemctl stop cups.socket
+systemctl disable cups.path
+systemctl disable cups-browsed.service
+systemctl disable cups.service
+systemctl disable cups.socket
+echo "manual" >> /etc/init/avahi-daemon.override
+echo "manual" >> /etc/init/cups-browsed.override
+echo "manual" >> /etc/init/cups.override
+##fin de servicios
 
 # Entrar al menú principal -> Settings Manager -> Additional Drivers (en la sección Hardware) -> en la pestaña Additional Drivers -> marcar "Using NVIDIA binary driver - version 331.38 from nvidia-331 (propietary, tested)" -> click en el botón Apply Changes (pide password) -> click en Restart
+
+###para CUDA y OPENGL
+apt-get install -y freeglut3
+apt-get install -y freeglut3-dev
+apt-get install -y libglew-dev
+
 
 #Obtener los nombres de los usuarios
 ls -1 /home > users
@@ -115,6 +201,22 @@ source /root/.bashrc
 
 rm users
 
+
+if [ $1 -eq 1 ] # si CUDA
+then
+  #wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1404/x86_64/cuda-repo-ubuntu1404_6.5-14_amd64.deb
+  wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/rpmdeb/cuda-repo-ubuntu1410-7-0-local_7.0-28_amd64.deb
+  dpkg -i cuda-repo-ubuntu1410-7-0-local_7.0-28_amd64.deb
+  #dpkg -i cuda-repo-ubuntu1204_5.5-0_amd64.deb
+  apt-get update
+  ###apt-cache search cuda
+# pero vuelve a instalar openjdk
+  apt-get install -y cuda-7-0
+  ###rm cuda-repo-ubuntu1204_5.5-0_amd64.deb
+  rm cuda-repo-ubuntu1410-7-0-local_7.0-28_amd64.deb
+fi
+
+
 # Desinstalar Java
 if [ $5 -eq 1 ]
 then
@@ -147,45 +249,12 @@ echo "deployment.security.level=MEDIUM" >> /etc/.java/deployment/deployment.prop
 cd
 
 
-# cerrar servicios
-apt-get install -y nmap
-nmap -sTU localhost
-service avahi-daemon stop
-service cups-browsed stop
-service cups stop
-echo "manual" >> /etc/init/avahi-daemon.override
-echo "manual" >> /etc/init/cups-browsed.override
-echo "manual" >> /etc/init/cups.override
-
-# para OpenGL y CUDA
-apt-get install -y freeglut3      #Para programar en openGL, dependencia
-apt-get install -y freeglut3-dev  #para programar en OpenGL
-
-# service lightdm stop
-# service lightdm start
-# NO funciona wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1304/x86_64/cuda-repo-ubuntu1304_6.0-37_amd64.deb
-# NO funciona dpkg -i cuda-repo-ubuntu1304_6.0-37_amd64.deb 
-if [ $1 -eq 1 ] # si CUDA
-then
-  wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1204/x86_64/cuda-repo-ubuntu1204_5.5-0_amd64.deb
-  dpkg -i cuda-repo-ubuntu1204_5.5-0_amd64.deb
-  apt-get update
-  apt-cache search cuda
-# pero vuelve a instalar openjdk
-  apt-get install -y cuda
-  rm cuda-repo-ubuntu1204_5.5-0_amd64.deb
-fi
-
 # Ver para otras opciones: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
 # Instaladores a mano .deb en http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1304/x86_64/
 
 if [ $2 -eq 1 ] # si se quiere LATEX
 then
-  #Instalacion de LATEX -- Esta parte dura bastante, se descargan cerca de 2GB
   apt-get install -y texlive-full
-  #Descarga de TexMaker: Ide para latex
-  wget http://www.xm1math.net/texmaker/texmaker_ubuntu_14.04_4.2_amd64.deb
-  dpkg -i texmaker_ubuntu_14.04_4.2_amd64.deb 
 fi
 
 
@@ -216,8 +285,8 @@ then
   dpkg --add-architecture i386 #habilitar multi-arch
   aptitude update
   aptitude install steam
-  aptitude install libgl1-nvidia-glx:i386  #agregar nvidia graphics hardware
-  aptitude install libgl1-fglrx-glx:i386    #agregar ATI/AMD  graphics hardware
+  #aptitude install libgl1-nvidia-glx:i386  #agregar nvidia graphics hardware
+  #aptitude install libgl1-fglrx-glx:i386    #agregar ATI/AMD  graphics hardware
   ###falta determinar que tarjeta grafica tiene el usuario para instalar los drivers apropiados
 
 fi
@@ -297,5 +366,9 @@ apt-add-repository 'deb [arch=amd64,i386] https://apt.jenslody.de/stable jessie 
 
 sudo apt-get update
 sudo apt-get install jens-lody-debian-keyring
-echo "haz algo aki"
+fi
+
+if [ $9 -eq 1 ] # si se quiere scilab
+then
+apt-get install -y scilab
 fi
