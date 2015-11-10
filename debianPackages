@@ -8,7 +8,7 @@ then
   echo "       B es 1 si se quire instalar LATEX para escribir papers o 0 si no"
   echo "       C es 1 si se quiere instalar STEAM para juegos o 0 si no"
   echo "       D es 1 si se quiere instalar Netbeans o 0 si no"
-  echo "       E es 1 si no se instaló Netbeans ni CUDA y se quiere quitar el otro java de linux (ya que si se instalará el Java de Oracle) o 0 si no se quiere quitar"
+  echo "       E es 1 si se quiere el paquete de office (writer, spreadsheet, presentation) de kingsoft"
   echo "       F es 1 si se quiere el kit de programadores (git, R, octave, ruby, rails)"
   echo "       G es 1 si se quiere code lite (ide)"
   echo "       H es 1 si se quiere code blocks (ide)"
@@ -226,15 +226,14 @@ fi
 # Desinstalar Java
 if [ $5 -eq 1 ]
 then
-  # dpkg -r --force-depends openjdk-7-jre openjdk-7-jre-headless
-  # dpkg -r tzdata-java
-  # dpkg -r --force-depends java-common default-jre default-jre-headless openjdk-7-jre-headless
-  # dpkg -r icedtea-7-jre-jamvm
-  # dpkg -P --force-depends openjdk-7-jre-headless java-common
-  # dpkg -r --force-depends libservlet3.0-java ca-certificates-java libatk-wrapper-java libatk-wrapper-java-jni libhsqldb1.8.0-java
-  # dpkg -P  ca-certificates-java libatk-wrapper-java-jni
-  # dpkg -r libreoffice-sdbc-hsqldb+
-  echo "pass" #arreglando el error
+  if [$arki -eq x86_64]
+    then
+      wget http://kdl.cc.ksosoft.com/wps-community/download/a19/wps-office_9.1.0.4975~a19p1_amd64.deb
+      dpkg - i wps-office_9.1.0.4975-a19p1_amd64.deb
+    else 
+      wget http://kdl.cc.ksosoft.com/wps-community/download/a19/wps-office_9.1.0.4975~a19p1_i386.deb
+      dpkg -i wps-office_9.1.0.4975-a19p1_i386.deb
+    fi
 fi
 
 # Instalar Java

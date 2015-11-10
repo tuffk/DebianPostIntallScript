@@ -17,7 +17,7 @@ substitute the letter with 1 if you want to install the following packages or wi
 2. B for LATEX
 3. C for Steam
 4. D for NetBeans IDE
-5. E 
+5. E for PWS kingsoft Office for linux
 6. F for git, R, Octave, ruby & rails
 7. G for Code lite IDE
 8. H for code blocks IDE
