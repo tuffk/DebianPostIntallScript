@@ -1,4 +1,5 @@
 #!/bin/bash
+#Autor: Jaime Margolin
 if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]|| [ -z $4 ]|| [ -z $5 ] || [ -z $6 ] || [ -z $7] || [ -z $8] || [ -z $9]
 then 
   echo "Faltan opciones"
@@ -81,6 +82,7 @@ apt-get install -y cmake              #open source cross platform make
 apt-get install -y cmake-curses-gui   #
 apt-get install vim                   #debian no lo tiene por default asi que lo instalamos
 apt-get install -y dia-libs           #diagramas
+apt-get install -y vlc                #reproductor MEDIA VLC
 
 
 #### drivers wifi
@@ -223,7 +225,7 @@ then
 fi
 
 
-# Desinstalar Java
+# instalacion de kingsoft para ambas arquitecturas
 if [ $5 -eq 1 ]
 then
   if [$arki -eq x86_64]
@@ -236,15 +238,27 @@ then
     fi
 fi
 
-# Instalar Java
-wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u11-b12/jdk-8u11-linux-x64.tar.gz
+# Instalar Java de oracle y des instalar JAVA de linuxeros
+dpkg -r --force-depends openjdk-7-jre openjdk-7-jre-headless
+dpkg -r tzdata-java
+dpkg -r --force-depends java-common default-jre default-jre-headless openjdk-7-jre-headless
+dpkg -r icedtea-7-jre-jamvm
+dpkg -P --force-depends openjdk-7-jre-headless java-common
+dpkg -r --force-depends libservlet3.0-java ca-certificates-java libatk-wrapper-java libatk-wrapper-java-jni libhsqldb1.8.0-java
+dpkg -P  ca-certificates-java libatk-wrapper-java-jni
+dpkg -r libreoffice-sdbc-hsqldb
+
+
+wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.tar.gz
 mkdir /usr/java
-mv jdk-8u11-linux-x64.tar.gz /usr/java
+mv jdk-8u45-linux-x64.tar.gz /usr/java
+#mv jdk-8u11-linux-x64.tar.gz /usr/java
 cd /usr/java
-tar zxvf jdk-8u11-linux-x64.tar.gz
-ln -s jdk1.8.0_11 latest
+tar zxvf jdk-8u45-linux-x64.tar.gz
+#tar zxvf jdk-8u11-linux-x64.tar.gz
+ln -s jdk1.8.0_45 latest
+#ln -s jdk1.8.0_11 latest
 ln -s latest default
-#cambiar variables de ambiene
 ln -s /usr/java/default/jre/lib/amd64/libnpjp2.so /usr/lib/mozilla/plugins/libnpjp2.so
 mkdir /etc/.java
 mkdir /etc/.java/deployment
@@ -253,6 +267,10 @@ echo "deployment.system.config=file\:/etc/.java/deployment/deployment.properties
 echo "deployment.security.level=MEDIUM" >> /etc/.java/deployment/deployment.properties
 cd
 
+source $HOME/.bashrc
+java -version
+javac -version
+
 
 # Ver para otras opciones: http://askubuntu.com/questions/451672/installing-and-testing-cuda-in-ubuntu-14-04
 # Instaladores a mano .deb en http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1304/x86_64/
@@ -260,6 +278,11 @@ cd
 if [ $2 -eq 1 ] # si se quiere LATEX
 then
   apt-get install -y texlive-full
+
+#wget http://www.xm1math.net/texmaker/texmaker_ubuntu_14.10_4.4.1_amd64.deb
+#dpkg -i texmaker_ubuntu_14.10_4.4.1_amd64.deb
+#rm texmaker_ubuntu_14.10_4.4.1_amd64.deb
+
 fi
 
 
@@ -286,6 +309,15 @@ then
   #para debian 8 jessie
   #agregar a /etc/apt/sources.list 
   #deb http://http.debian.net/debian/ jessie main contrib non-free
+
+  apt-get install -y gnuchess
+  apt-get install -y xboard
+  apt-get install -y scid
+  apt-get install -y scid-rating-data
+  apt-get install -y chessx
+  apt-get install -y stockfish
+  apt-get install -y curl
+
   echo "deb http://http.debian.net/debian/ jessie main contrib non-free" >> /etc/apt/sources.list 
   dpkg --add-architecture i386 #habilitar multi-arch
   aptitude update
@@ -376,4 +408,5 @@ fi
 if [ $9 -eq 1 ] # si se quiere scilab
 then
 apt-get install -y scilab
+apt-get install -y scilab-plotlib
 fi
