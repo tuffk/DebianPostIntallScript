@@ -71,6 +71,7 @@ echo "listo para instalar"
 arki=$(arch)
 
 apt-get update
+apt-get upgrade
 
 ##instalas los paquetes que faltan
 apt-get install -y g++                #instala el compilador de C/C++
@@ -410,3 +411,11 @@ then
 apt-get install -y scilab
 apt-get install -y scilab-plotlib
 fi
+
+
+##finalizamos el script revisando que todos los paquetes se hayan isntalado correctamente con sus dependencias
+##borramos los paquetes rotos
+apt-get clean   # 
+apt-get autoremove -y # remove de forma segura
+apt-get install -fy #instalamos dependencias
+
