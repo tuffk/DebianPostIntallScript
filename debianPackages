@@ -378,8 +378,6 @@ then
     apt-get install octave
 fi
 
-apt-get autoremove -y 
-apt-get clean
 
 if [ $7 -eq 1 ] #si se quiere code lite
 then
